@@ -12,7 +12,9 @@ class Product < ApplicationRecord
     #Validate with condional same before
     validates :price, length: {in: 3..5, message:"El precio esta fuera de rango"}, if: :has_price?
     # si el methodo has_price return true, se ejecuta la validacion, en caso contrario se ignora
-
+    validate :code_validate
+    validates_with ProductValidator # Que ejecute el metodo validate pasando como argumento el objeto que se 
+    #pretende persistir 
 
     #used validation
     # var with valid?
@@ -32,6 +34,15 @@ class Product < ApplicationRecord
     end
 
     private
+
+    def code_validate
+        # Add new errors with method add = "Agregar un nuevo error"
+        # Add conditional
+        #Primer atributo si cumpple con la condicion (:code)
+        if self.code.nil? || self.code.length < 3 # si el codigo es nulo or code tiene una longitud menor a 3 , if true = add.errors
+            self.errors.add(:code, "El code debe poseer 3 caracteres")
+        end
+    end
 
     def validate_product
         puts "\n\n>>> Un nuevo producto sera añdidp a almacen!"
