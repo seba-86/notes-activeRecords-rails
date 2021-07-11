@@ -1,0 +1,73 @@
+Desde consola para filtrar y ver registros, al iterar el modelo
+
+2.6.3 :049 > Product.all.each do |pro|
+2.6.3 :050 >     puts "title: #{pro.title} id: #{pro.id}"
+2.6.3 :051?>   end
+
+// Obtener datos por columnas: ej:title del product
+Evitar el select *
+1ª forma = Product.order('price DESC').limit(5).select(:title) :Listar los 5 productos mas caros con limite de 5, obteniendo solo el title del producto y el id
+            Product.order('price DESC').limit(5).select(:title).each do |pro| : busqueda en listado en consola
+                puts pro.title
+            end
+2ªforma = Product.order('price DESC').limit(5).pluck(:title) : select x pluck: retorna un listado de valores o array con valores = ["Iphone", "Laptop", "PS5", "XBOX", "monitor"] 
+
+// La diferencia que select retorna una lista de objeto y pluck una lista de valores 
+Product.order('price DESC').limit(5).pluck(:title, :code) = [["Iphone", "0010"], ["Laptop", "0001"], ["PS5", "002"], ["XBOX", "005"], ["monitor", "0002"]] 
+
+// metodo = find_or_create_by = Busca el el regitro que cumpla con la condicion o argumento, en caso que exista lo retorna, en caso contrario se procede a crear.
+ej: New Product;
+Product.find_or_create_by(title: "Oso", code: "oso123", stock: 2, price: 3000) = (si no existe lo crea, pero debe cumplir con las validaciones del modelo, si no existe y 
+ademas no cumple con las validaciones = rollback transaction) 
+
+// metodo = first_or_create = Encontra una coincidencia usando "where" Ej: Buscar un producto que tenga por title: "poleron";
+Product.where(title: "poleron").first_or_create do |pro| = retorna un primer registro que cumpla con la condicion, si se vuelve a ejecutar con atributos distintos, solo retonara los valores de la condicion title
+    pro.code = "1212"
+    pro.price = "1500"
+end
+
+
+#scopes = consulta pre establecida para el modelo
+                # scope :available, -> { where("stock >= ?", 1)} #funcion anonima = ej: { where(:attibute => value)} 
+    scope :available, -> (min=1) { where("stock >=?", min)} # scope con argumentos
+    
+    # Todos los products que el stock sea mayor o igual a 1
+    # result: Product Load (0.4ms)  SELECT "products".* FROM "products" WHERE (stock >= 1) /* loading for inspect */ LIMIT ?  [["LIMIT", 11]]
+
+    #(available se registra como metodo de clase = Product.available), se podria utilizar el metodo pasandole el argumento directamente
+    #  ej: Product.available(20) = Products con stock que sean mayor a 20
+
+    #otro scope:
+
+    scope :order_price_desc, -> { order("price DESC")} # Ordenar los productos en orden desc en relacion al precio 
+    #result :  Product Load (0.4ms)  SELECT "products".* FROM "products" /* loading for inspect */ ORDER BY price DESC LIMIT ?  [["LIMIT", 11]]
+    
+    # Concatenar scopes, eJ: Obtener todos los productos cuyo stock sea mayor o igual a 10 y posterior ordenarlos con respecto al precio
+    # de forma descendente = Product.available(10).order_price_desc
+    # result: SELECT "products".* FROM "products" WHERE (stock >=10) /* loading for inspect */ ORDER BY price DESC LIMIT ?  [["LIMIT", 11]]
+
+2.6.3 :046 > Product.available(10).order_price_desc.each do |pro|
+2.6.3 :047 >     puts pro.title
+2.6.3 :048?>   end
+  Product Load (1.8ms)  SELECT "products".* FROM "products" WHERE (stock >=10) ORDER BY price DESC
+Iphone
+Laptop
+monitor
+Mouse
+HDMI
+USB
+example
+
+
+scope :available_and_order_price_desc, -> { available.order_price_desc}
+   #scope 1 + scope 2
+   #Product.available_and_order_price_desc
+   #result: Product Load (0.4ms)  SELECT "products".* FROM "products" WHERE (stock >=1) /* loading for inspect */ ORDER BY price DESC LIMIT ?  [["LIMIT", 11]]
+
+
+#utilizar scopes por medio de metodo de clase
+    # titulo y codigo de los 5 productos mas caros =
+    def self.top_5_expensive #self para convertirlo en metodo de clase del modelo 
+        self.available.order_price_desc.limit(5).select(:title, :code) #select 
+        #Condicionar, ordenar, limitar y seleccion de atributos
+    end

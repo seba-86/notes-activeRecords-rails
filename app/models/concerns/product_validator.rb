@@ -12,6 +12,6 @@ class ProductValidator < ActiveModel::Validator
         end
     end
 
-    
+  
 
 end
