@@ -1,9 +1,14 @@
 class Product < ApplicationRecord
 
     #save
-    before_save :validate_product
-    after_save :send_notification
+    # before_save :validate_product
+    before_create :validate_product # create se ejecuta solo cuando se crea el producto y no al actualizarlo, diferencia con el save
+    after_create :send_notification
+    # after_save :send_notification
     after_save :push_notification, if: :discount? # si el metodo discount? = true, callback se ejecuta
+    before_update :code_notification_changed, if: :code_changed? # si el code se modifica = true , ejecuta el callback al cambiar el code
+    after_update :send_notification_stock, if: :stock_limit?
+
 
     validates :title, presence: {message: "Es necesario el titulo"} # cambiar el mensaje, presence = true default
     validates :code, uniqueness: {message: "El code: %{value} esta en uso"} # response, %{valor del atributo}
@@ -69,6 +74,10 @@ class Product < ApplicationRecord
 
     private
 
+    def stock_limit?
+        self.saved_change_to_stock? && self.stock <= 5 
+    end
+
     def code_validate
         # Add new errors with method add = "Agregar un nuevo error"
         # Add conditional
@@ -91,6 +100,12 @@ class Product < ApplicationRecord
         puts "\n\n >>> Un nuevo producto ya se encuentra en descuento #{self.title}"
     end
 
+    def code_notification_changed
+        puts "\n\n >>> El code ha sido modificado"
+    end
+    def send_notification_stock
+        puts "\n\n >>> El producto: #{self.title} se encuentra con poco stock #{self.stock}"
+    end
 
 
 end

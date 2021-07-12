@@ -71,3 +71,29 @@ scope :available_and_order_price_desc, -> { available.order_price_desc}
         self.available.order_price_desc.limit(5).select(:title, :code) #select 
         #Condicionar, ordenar, limitar y seleccion de atributos
     end
+
+//Actualizar registros
+
+- Callbacks si actualizamos un registro con el callback after_save o before_save = metodo save, si no existe en la base de datos el metodo lo crea si existe lo actualizamos
+Por ejemplo si hay un callback que notifica a un usuario, este es notificado cuando se crea el producto y actualizado
+Pero si el callback es after_create o before_create este se ejecuta cuando solo es creado y no actualizado.
+
+- Metodo update = se ejecuta si las validaciones coinciden 
+- Metodo update_attribute = Modificar atributo especifico, recibe el los argumento :attibute y el valor ej: product.update_attribute(:price, 1600)
+nota: diferencia entre update_attributes y update = update_attributes = omite todas las validaciones
+- Metodo update_column = actuliza un atributo pero se salta los callbacks y validaciones y no actuliza el update_at
+- Metodo update_columns = Lo mismo con lo anterior pero con multiples atributos
+
+
+//Eliminar registros 
+.destroy = elimina un registro completo
+.destroy_all = elimina multiples registros apartir de una consulta ej : eliminar productos con stock <= 3 (Product.where('stock <= ?', 3).destroy_all)
+
+
+//Monitorear cambios de los registros
+- metodo changed = boolean
+- metodo changes = para ver el antes y el despues de los valores cambiados de los atributos
+- metodo changed? = para buscar un atributo especifico y si ha sido modificado ej: product.code_changed? = si ha sido cambiado el atributo code (boolean)
+= if true, option del valor anterior de ese atributo seria: product.code_was (si se cambia no olvidar persistir .save), if persisted? = true , 
+product.changed? = false
+- Metodo saved_change_to_atributo? = verificar si despues de persitido fue cambiado 
