@@ -103,3 +103,8 @@ product.changed? = false
 Constraint = Es mas seguro generar un constraint directamente a la base de datos que al modelo ej: t.string :username, null: false
 El atributo username de la tabla users en el caso no puede ser nulo
 
+note: console pg: /Library/PostgreSQL/12/scripts/runpsql.sh;(route SQL_shell)
+\dt = lista de relacion 
+\d+ "nombre de la tabla" = details table
+
+
