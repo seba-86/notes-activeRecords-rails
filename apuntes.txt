@@ -98,7 +98,7 @@ nota: diferencia entre update_attributes y update = update_attributes = omite to
 product.changed? = false
 - Metodo saved_change_to_atributo? = verificar si despues de persitido fue cambiado 
 
-// Relaciones
+// Metodos de Relaciones
 
 Constraint = Es mas seguro generar un constraint directamente a la base de datos que al modelo ej: t.string :username, null: false
 El atributo username de la tabla users en el caso no puede ser nulo
@@ -107,4 +107,8 @@ note: console pg: /Library/PostgreSQL/12/scripts/runpsql.sh;(route SQL_shell)
 \dt = lista de relacion 
 \d+ "nombre de la tabla" = details table
 
+has_one :shopping_cart => Un usuario solo puede poseer un carro de compras y ese carro le pertenece al user 
+Si el user posee mas elementos en este caso suponiendo mas carros de compras en la relacion has_many,
+has_one permite acceder al primer elemento (x default) de la coleccion (has_many) en el caso mas de uno.
+result: #<ShoppingCart id: 1, total: 0, user_id: 1> 
 
