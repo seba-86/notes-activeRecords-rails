@@ -97,3 +97,9 @@ nota: diferencia entre update_attributes y update = update_attributes = omite to
 = if true, option del valor anterior de ese atributo seria: product.code_was (si se cambia no olvidar persistir .save), if persisted? = true , 
 product.changed? = false
 - Metodo saved_change_to_atributo? = verificar si despues de persitido fue cambiado 
+
+// Relaciones
+
+Constraint = Es mas seguro generar un constraint directamente a la base de datos que al modelo ej: t.string :username, null: false
+El atributo username de la tabla users en el caso no puede ser nulo
+
